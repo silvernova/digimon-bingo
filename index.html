@@ -6,6 +6,18 @@
     <title>Digimon Bingo Card</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+	body {
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        #codefall {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.5;
+        }
         .checked {
             background-color: #d4edda !important;
             opacity: 0.7;
@@ -16,6 +28,7 @@
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+	<canvas id="codefall"></canvas>
     <div id="loading" class="text-center text-lg font-semibold text-gray-700">
         Loading Digimon Bingo Card... If this persists, check the browser console (F12) for errors or ensure an internet connection.
     </div>
@@ -183,6 +196,57 @@
 
         // Generate initial bingo card
         generateBingoCard();
+    </script>
+    <script>
+const canvas = document.getElementById('codefall');
+const ctx = canvas.getContext('2d');
+
+// Set canvas size to window size
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+// Characters to display (0 and 1 for binary)
+const chars = '01';
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = [];
+
+// Initialize drops array
+for (let x = 0; x < columns; x++) {
+    drops[x] = 1;
+}
+
+// Animation function
+function draw() {
+    // Semi-transparent black for fade effect
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Set text style
+    ctx.fillStyle = '#0f0'; // Green text
+    ctx.font = fontSize + 'px monospace';
+
+    // Loop through drops
+    for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        // Reset drop to top when it reaches bottom
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i]++;
+    }
+}
+
+// Run animation
+setInterval(draw, 33);
+
+// Resize canvas on window resize
+window.addEventListener('resize', () => {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+});
     </script>
 </body>
 </html>
